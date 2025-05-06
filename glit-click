@@ -5,182 +5,162 @@
   <title>Glitch Clicker</title>
   <style>
     body {
-      background: #000;
-      color: #0f0;
-      font-family: monospace;
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      text-align: center;
       margin: 0;
       padding: 0;
     }
+
     header {
       display: flex;
       justify-content: space-between;
-      padding: 10px;
-      background: #111;
-      font-size: 18px;
+      padding: 10px 20px;
+      background-color: #e0e0e0;
+      font-size: 16px;
     }
+
     #settings, #codes {
       cursor: pointer;
+      color: #555;
     }
-    main {
-      text-align: center;
+
+    h1 {
       margin-top: 30px;
+      color: #333;
     }
-    .glitch-btn {
-      font-size: 24px;
-      padding: 20px 40px;
-      margin: 20px;
-      background: #111;
-      border: 2px solid #0f0;
-      color: #0f0;
+
+    #clicker-img {
+      width: 300px;
       cursor: pointer;
-      animation: glitch 0.3s infinite alternate;
+      transition: transform 0.1s;
     }
-    @keyframes glitch {
-      0% { transform: translate(0); }
-      50% { transform: translate(1px, -1px); }
-      100% { transform: translate(-1px, 1px); }
+
+    #clicker-img:active {
+      transform: scale(0.97);
     }
-    #counter, #multiplier, #message {
-      margin-top: 10px;
+
+    #counter, #multiplier {
       font-size: 20px;
+      margin-top: 15px;
+      color: #333;
     }
-    #codeInput, #upgrades {
+
+    #message {
+      margin-top: 10px;
+      font-size: 18px;
+      color: #666;
+      opacity: 1;
+      transition: opacity 1s ease-in-out;
+    }
+
+    #message.hidden {
+      opacity: 0;
+    }
+
+    #codeInput {
       margin-top: 20px;
     }
+
     input[type="text"] {
       padding: 5px;
       font-size: 16px;
     }
+
     button {
-      background: #111;
-      border: 1px solid #0f0;
-      color: #0f0;
-      padding: 5px 10px;
-      margin: 5px;
-      cursor: pointer;
+      padding: 6px 10px;
+      font-size: 14px;
+      margin-left: 5px;
     }
   </style>
 </head>
 <body>
   <header>
     <div id="settings">⚙️ Settings</div>
-    <div id="codes">🧪 Enter Code</div>
+    <div id="codes">🔑 Codes</div>
   </header>
 
-  <main>
-    <h1>GLITCH CLICKER</h1>
-    <button class="glitch-btn" id="clicker">CLICK</button>
-    <div id="counter">Glitch Points: 0</div>
-    <div id="multiplier">Multiplier: 1</div>
-    <div id="message"></div>
+  <h1>Glitch Clicker</h1>
+  <img id="clicker-img" src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" alt="Glitch" />
+  <div id="counter">Glitch Points: 0</div>
+  <div id="multiplier">Multiplier: 1</div>
+  <div id="message"></div>
 
-    <div id="upgrades">
-      <h2>Upgrades</h2>
-      <button onclick="buyMultiplier()">+1 Multiplier (Cost: 100 GP)</button>
-      <button onclick="buyAutoClick()">Auto Clicker (Cost: 500 GP)</button>
-    </div>
-
-    <div id="codeInput" style="display:none;">
-      <input type="text" id="codeBox" placeholder="Enter secret code...">
-      <button onclick="useCode()">Submit</button>
-    </div>
-  </main>
+  <div id="codeInput" style="display: none;">
+    <input type="text" id="codeBox" placeholder="Enter code...">
+    <button onclick="useCode()">Submit</button>
+  </div>
 
   <script>
-    let points = parseInt(localStorage.getItem('points')) || 0;
-    let multiplier = parseInt(localStorage.getItem('multiplier')) || 1;
-    let autoClicker = parseInt(localStorage.getItem('autoClicker')) || 0;
+    let points = 0;
+    let multiplier = 1;
 
-    const clicker = document.getElementById('clicker');
-    const counter = document.getElementById('counter');
-    const multDisplay = document.getElementById('multiplier');
-    const message = document.getElementById('message');
-    const codesBtn = document.getElementById('codes');
-    const codeInput = document.getElementById('codeInput');
+    const img = document.getElementById("clicker-img");
+    const counter = document.getElementById("counter");
+    const multDisplay = document.getElementById("multiplier");
+    const message = document.getElementById("message");
+    const codesBtn = document.getElementById("codes");
+    const codeInput = document.getElementById("codeInput");
 
-    function updateDisplay() {
-      counter.textContent = `Glitch Points: ${points}`;
-      multDisplay.textContent = `Multiplier: ${multiplier}`;
-      localStorage.setItem('points', points);
-      localStorage.setItem('multiplier', multiplier);
-      localStorage.setItem('autoClicker', autoClicker);
-    }
+    const milestones = {
+      1: "Welcome!",
+      10: "Transforming...",
+      100: "Glitch Visitor",
+      1000: "Reality Breaking",
+      10000: "You are the Glitch!"
+    };
 
-    function showMilestoneMessage(p) {
-      if (p === 1) message.textContent = "Welcome!";
-      else if (p === 10) message.textContent = "Transforming...";
-      else if (p === 100) message.textContent = "Glitch Visitor";
-      else if (p === 1000) message.textContent = "Reality Breaking";
-      else if (p === 10000) message.textContent = "You are the Glitch!";
-    }
-
-    clicker.addEventListener('click', () => {
+    img.addEventListener("click", () => {
       points += multiplier;
-      updateDisplay();
-      showMilestoneMessage(points);
+      counter.textContent = "Glitch Points: " + points;
+      multDisplay.textContent = "Multiplier: " + multiplier;
+
+      if (milestones[points]) {
+        showMessage(milestones[points]);
+      }
     });
 
-    codesBtn.addEventListener('click', () => {
-      codeInput.style.display = codeInput.style.display === 'none' ? 'block' : 'none';
+    function showMessage(text) {
+      message.textContent = text;
+      message.classList.remove("hidden");
+      setTimeout(() => {
+        message.classList.add("hidden");
+      }, 2000);
+    }
+
+    codesBtn.addEventListener("click", () => {
+      codeInput.style.display = codeInput.style.display === "none" ? "block" : "none";
     });
 
     function useCode() {
-      const code = document.getElementById('codeBox').value.trim().toLowerCase();
-      if (code === "superglitch") {
-        points += 100000;
-        message.textContent = "Code accepted: +100000 Glitch Points";
-      } else if (code === "bestglitchcode") {
-        multiplier += 100000;
-        message.textContent = "Code accepted: +100000 Multiplier";
-      } else if (code === "firstglitch") {
-        multiplier += 1000;
-        message.textContent = "Code accepted: +1000 Multiplier";
-      } else {
-        message.textContent = "Invalid Code!";
+      const code = document.getElementById("codeBox").value.trim().toLowerCase();
+      let valid = true;
+
+      switch (code) {
+        case "superglitch":
+          points += 100000;
+          showMessage("Code used: +100000 Glitch Points");
+          break;
+        case "bestglitchcode":
+          multiplier += 100000;
+          showMessage("Code used: +100000 Multiplier");
+          break;
+        case "firstglitch":
+          multiplier += 1000;
+          showMessage("Code used: +1000 Multiplier");
+          break;
+        default:
+          showMessage("❌ Invalid code");
+          valid = false;
       }
-      updateDisplay();
-      document.getElementById('codeBox').value = "";
-    }
 
-    function buyMultiplier() {
-      if (points >= 100) {
-        points -= 100;
-        multiplier += 1;
-        message.textContent = "+1 Multiplier purchased!";
-      } else {
-        message.textContent = "Not enough Glitch Points!";
+      if (valid) {
+        counter.textContent = "Glitch Points: " + points;
+        multDisplay.textContent = "Multiplier: " + multiplier;
       }
-      updateDisplay();
+
+      document.getElementById("codeBox").value = "";
     }
-
-    function buyAutoClick() {
-      if (points >= 500 && autoClicker === 0) {
-        points -= 500;
-        autoClicker = 1;
-        message.textContent = "Auto Clicker Activated!";
-        startAutoClick();
-      } else if (autoClicker === 1) {
-        message.textContent = "Auto Clicker already active!";
-      } else {
-        message.textContent = "Not enough Glitch Points!";
-      }
-      updateDisplay();
-    }
-
-    function startAutoClick() {
-      if (autoClicker) {
-        setInterval(() => {
-          points += multiplier;
-          updateDisplay();
-        }, 1000);
-      }
-    }
-
-    // Ενεργοποιεί το auto click αν έχει αγοραστεί
-    if (autoClicker) startAutoClick();
-
-    // Εμφανίζει δεδομένα στην αρχή
-    updateDisplay();
   </script>
 </body>
 </html>
