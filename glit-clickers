@@ -162,6 +162,7 @@
         case "megaburst": points += 1000000; showMessage("Mega Burst +1M GP!"); break;
         case "ultramulti": baseMultiplier += 5000; showMessage("Ultra Multi +5K!"); break;
         case "rebirth": points = 0; baseMultiplier = 1; showMessage("Rebirth Reset!"); break;
+        case "ascend": points = 0; baseMultiplier = 1; showMessage("Ascension Reset!"); break;
         default: return showMessage("❌ Invalid code");
       }
       usedCodes.add(code);
@@ -211,7 +212,7 @@
     function rebirth() {
       if (points >= 10000000) {
         resetAllProgress();
-        rebirthCount = 1;
+        rebirthCount++;
         showMessage("🔁 Rebirth Complete!");
         updateDisplay();
       }
@@ -220,7 +221,7 @@
     function superRebirth() {
       if (rebirthCount >= 50) {
         resetAllProgress();
-        superRebirthCount = 1;
+        superRebirthCount++;
         showMessage("💠 Super Rebirth Complete!");
         updateDisplay();
       }
@@ -229,7 +230,7 @@
     function glitchRebirth() {
       if (superRebirthCount >= 50) {
         resetAllProgress();
-        glitchRebirthCount = 1;
+        glitchRebirthCount++;
         showMessage("🧬 Glitch Rebirth Activated!");
         updateDisplay();
       }
