@@ -4,44 +4,71 @@
   <meta charset="UTF-8">
   <title>Glitch Clicker</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
-      text-align: center;
+    html, body {
       margin: 0;
       padding: 0;
+      overflow: hidden;
+      font-family: 'Arial', sans-serif;
+    }
+    body {
+      background: url('https://media.tenor.com/Z6WyU3rddr4AAAAd/glitch.gif') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      text-align: center;
+    }
+    #container {
+      position: relative;
+      z-index: 2;
+      padding-top: 60px;
     }
     header {
+      position: fixed;
+      top: 0;
+      width: 100%;
       display: flex;
       justify-content: space-between;
       padding: 10px 20px;
-      background-color: #e0e0e0;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 3;
     }
     #clicker-img {
-      width: 300px;
+      width: 250px;
       cursor: pointer;
       transition: transform 0.1s;
     }
     #clicker-img:active {
-      transform: scale(0.97);
+      transform: scale(0.95);
     }
-    #counter, #multiplier, #rebirths, #ascensions {
-      font-size: 20px;
-      margin-top: 10px;
+    .info {
+      font-size: 18px;
+      margin: 10px;
+      text-shadow: 0 0 5px #ff00ff;
     }
     #message {
-      font-size: 18px;
-      margin-top: 10px;
-      opacity: 1;
+      font-size: 22px;
+      margin-top: 15px;
       transition: opacity 1s ease-in-out;
+      text-shadow: 0 0 10px cyan;
     }
     #message.hidden {
       opacity: 0;
     }
     button {
       margin: 5px;
-      padding: 10px 20px;
-      font-size: 14px;
+      padding: 10px 15px;
+      font-size: 16px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: 1px solid #ff00ff;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: rgba(255, 0, 255, 0.3);
+    }
+    input {
+      padding: 5px;
+      margin: 5px;
     }
   </style>
 </head>
@@ -50,39 +77,36 @@
     <div>⚙️ Settings</div>
     <div onclick="toggleCodeInput()">🔑 Codes</div>
   </header>
-  <h1>Glitch Clicker</h1>
-  <img id="clicker-img" src="https://i.gifer.com/7VE.gif" alt="Click!">
+  <div id="container">
+    <h1>Glitch Clicker</h1>
+    <img id="clicker-img" src="https://media.tenor.com/NOYF3f82b_gAAAAC/glitch.gif" alt="Glitch Click">
 
-  <div id="counter">Glitch Points: 0</div>
-  <div id="multiplier">Multiplier: 1</div>
-  <div id="rebirths">Rebirths: 0 | Super: 0 | Glitch: 0</div>
-  <div id="ascensions">Ascensions: 0</div>
-  <div id="message"></div>
+    <div class="info" id="counter">Glitch Points: 0</div>
+    <div class="info" id="multiplier">Multiplier: 1</div>
+    <div class="info" id="rebirths">Rebirths: 0 | Super: 0 | Glitch: 0</div>
+    <div class="info" id="ascensions">Ascensions: 0</div>
+    <div id="message"></div>
 
-  <button onclick="buyMultiplier()">Buy +1 Multiplier (100 GP)</button>
-  <button onclick="buyAutoClicker()">Buy Auto Clicker (500 GP)</button>
-  <button id="rebirthBtn" onclick="rebirth()" style="display:none">🔁 Rebirth (10M GP)</button>
-  <button id="superRebirthBtn" onclick="superRebirth()" style="display:none">💠 Super Rebirth (50 R)</button>
-  <button id="glitchRebirthBtn" onclick="glitchRebirth()" style="display:none">🧬 Glitch Rebirth (50 SR)</button>
-  <button id="ascendBtn" onclick="ascend()" style="display:none">🚀 Ascend (1B GP)</button>
+    <button onclick="buyMultiplier()">Buy +1 Multiplier (100 GP)</button>
+    <button onclick="buyAutoClicker()">Buy Auto Clicker (500 GP)</button>
+    <button id="rebirthBtn" onclick="rebirth()" style="display:none">🔁 Rebirth (10M GP)</button>
+    <button id="superRebirthBtn" onclick="superRebirth()" style="display:none">💠 Super Rebirth (50 R)</button>
+    <button id="glitchRebirthBtn" onclick="glitchRebirth()" style="display:none">🧬 Glitch Rebirth (50 SR)</button>
+    <button id="ascendBtn" onclick="ascend()" style="display:none">🚀 Ascend (1B GP)</button>
 
-  <div id="codeInput" style="margin-top:15px; display:none">
-    <input type="text" id="codeBox" placeholder="Enter code...">
-    <button onclick="useCode()">Submit</button>
+    <div id="codeInput" style="margin-top:15px; display:none">
+      <input type="text" id="codeBox" placeholder="Enter code...">
+      <button onclick="useCode()">Submit</button>
+    </div>
   </div>
-
-  <audio id="clickSound" src="click.mp3" preload="auto"></audio>
-
   <script>
     let points = 0;
     let baseMultiplier = 1;
     let autoClicker = false;
-
     let rebirthCount = 0;
     let superRebirthCount = 0;
     let glitchRebirthCount = 0;
     let ascensionCount = 0;
-
     let usedCodes = new Set();
 
     const milestones = {
@@ -94,7 +118,6 @@
       1000000: "You broke reality."
     };
 
-    const clickSound = document.getElementById("clickSound");
     const counter = document.getElementById("counter");
     const multDisplay = document.getElementById("multiplier");
     const rebirthDisplay = document.getElementById("rebirths");
@@ -105,8 +128,6 @@
       points += getEffectiveMultiplier();
       updateDisplay();
       if (milestones[points]) showMessage(milestones[points]);
-      clickSound.currentTime = 0;
-      clickSound.play();
     });
 
     function updateDisplay() {
@@ -114,7 +135,6 @@
       multDisplay.textContent = `Multiplier: ${getEffectiveMultiplier()}`;
       rebirthDisplay.textContent = `Rebirths: ${rebirthCount} | Super: ${superRebirthCount} | Glitch: ${glitchRebirthCount}`;
       ascensionDisplay.textContent = `Ascensions: ${ascensionCount}`;
-
       document.getElementById("rebirthBtn").style.display = points >= 10000000 ? "inline-block" : "none";
       document.getElementById("superRebirthBtn").style.display = rebirthCount >= 50 ? "inline-block" : "none";
       document.getElementById("glitchRebirthBtn").style.display = superRebirthCount >= 50 ? "inline-block" : "none";
@@ -135,7 +155,6 @@
     function useCode() {
       const code = document.getElementById("codeBox").value.trim().toLowerCase();
       if (usedCodes.has(code)) return showMessage("⚠️ Already used");
-
       switch(code) {
         case "superglitch": points += 100000; showMessage("+100k GP"); break;
         case "firstglitch": baseMultiplier += 1000; showMessage("+1000 Multiplier"); break;
